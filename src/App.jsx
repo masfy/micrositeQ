@@ -106,7 +106,18 @@ const AdminLogin = ({ onLogin }) => {
   );
 };
 
+const BackgroundAnimation = () => (
+  <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+    <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+    <div className="absolute top-0 right-1/4 w-96 h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+    <div className="absolute -bottom-32 left-1/3 w-96 h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+  </div>
+);
+
+// ... (Existing components)
+
 const PublicEventView = ({ eventId }) => {
+  // ... (Existing state & effects)
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -114,18 +125,18 @@ const PublicEventView = ({ eventId }) => {
   const carouselRef = useRef(null);
 
   useEffect(() => {
-    // Check system preference or saved preference could go here
+    // Check system preference
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       setDarkMode(true);
     }
   }, []);
 
+  // ... (Data fetching logic - unchanged)
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await fetch(`${API_URL}?action=getData&eventId=${eventId}`);
         const json = await res.json();
-        // Parse boolean
         if (json?.settings?.show_facilitators === 'true') json.settings.show_facilitators = true;
         if (json?.settings?.show_facilitators === 'false') json.settings.show_facilitators = false;
         if (json?.settings?.show_facilitators === undefined) json.settings.show_facilitators = true;
@@ -135,6 +146,7 @@ const PublicEventView = ({ eventId }) => {
     fetchData();
   }, [eventId]);
 
+  // ... (Carousel logic - unchanged)
   useEffect(() => {
     if (data?.settings?.layout_style === 'carousel' && data?.links?.length > 0) {
       const timer = setInterval(() => setActiveIndex(p => (p + 1) % data.links.length), 4000);
@@ -158,21 +170,20 @@ const PublicEventView = ({ eventId }) => {
 
   return (
     <div className={darkMode ? "dark" : ""}>
-      <div className="min-h-screen pb-24 font-sans transition-colors duration-500 bg-slate-50 dark:bg-slate-950"
-        style={!darkMode ? { backgroundColor: settings.background_color } : {}}>
+      <div className="min-h-screen pb-24 font-sans transition-colors duration-500 bg-slate-50 dark:bg-slate-950 relative"
+        style={!darkMode ? { backgroundColor: settings.background_color || '#f8fafc' } : {}}>
+
+        {!darkMode && <BackgroundAnimation />}
 
         {/* Theme Toggle */}
         <button
           onClick={() => setDarkMode(!darkMode)}
-          className="fixed top-6 right-6 z-50 p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-slate-800 dark:text-white shadow-lg hover:scale-110 active:scale-95 transition-all"
+          className="fixed top-6 right-6 z-50 p-3 rounded-full bg-white/80 dark:bg-white/10 backdrop-blur-md border border-slate-200 dark:border-white/20 text-slate-800 dark:text-white shadow-lg hover:scale-110 active:scale-95 transition-all"
         >
           {darkMode ? <Sun size={20} className="fill-yellow-400 text-yellow-400 animate-spin-slow" /> : <Moon size={20} className="fill-slate-800" />}
         </button>
 
-        <header className="pt-24 pb-12 px-6 flex flex-col items-center text-center relative overflow-hidden">
-          {/* Decorative Background Elements */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-b from-blue-500/10 to-transparent rounded-full blur-[80px] -z-10 pointer-events-none" />
-
+        <header className="pt-24 pb-12 px-6 flex flex-col items-center text-center relative overflow-hidden z-10">
           <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 260, damping: 20 }} className="relative mb-8 group">
             <div className="w-36 h-36 rounded-full p-1 bg-gradient-to-tr from-blue-400 via-purple-500 to-pink-500 shadow-2xl group-hover:scale-105 transition-transform duration-500">
               <div className="w-full h-full rounded-full border-4 border-white dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-800">
@@ -188,12 +199,12 @@ const PublicEventView = ({ eventId }) => {
           </motion.div>
 
           <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
-            <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight mb-3">{settings.title}</h1>
-            <p className="text-slate-500 dark:text-slate-400 font-medium max-w-md mx-auto text-base/relaxed">{settings.description}</p>
+            <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight mb-3 drop-shadow-sm">{settings.title}</h1>
+            <p className="text-slate-600 dark:text-slate-400 font-semibold max-w-md mx-auto text-base/relaxed">{settings.description}</p>
           </motion.div>
         </header>
 
-        <main className="max-w-xl mx-auto px-6 space-y-16">
+        <main className="max-w-xl mx-auto px-6 space-y-16 relative z-10">
           {settings.layout_style === 'stack' && (
             <div className="space-y-4">
               {activeLinks.map((l, i) => (
@@ -201,15 +212,15 @@ const PublicEventView = ({ eventId }) => {
                   key={l.id} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: i * 0.05 }}
                   whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                   href={l.url}
-                  className="relative overflow-hidden bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-white/60 dark:border-slate-700 p-4 rounded-[2rem] flex items-center justify-between group hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300"
+                  className="relative overflow-hidden bg-white dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-700 p-4 rounded-[2rem] flex items-center justify-between group shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:animate-shimmer pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-100/50 dark:via-white/5 to-transparent translate-x-[-200%] group-hover:animate-shimmer pointer-events-none" />
 
                   <div className="flex items-center gap-5 relative z-10">
                     <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:rotate-6 transition-transform" style={{ backgroundColor: settings.theme_color }}>
                       {ICON_OPTIONS[l.icon] || <LinkIcon size={24} />}
                     </div>
-                    <span className="font-bold text-slate-800 dark:text-indigo-50 text-lg">{l.label}</span>
+                    <span className="font-bold text-slate-900 dark:text-indigo-50 text-lg tracking-tight">{l.label}</span>
                   </div>
                   <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-slate-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-slate-900 transition-colors z-10">
                     <ChevronRight size={20} />
@@ -226,12 +237,12 @@ const PublicEventView = ({ eventId }) => {
                   key={l.id} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: i * 0.05 }}
                   whileHover={{ scale: 1.05, rotate: 1 }} whileTap={{ scale: 0.95 }}
                   href={l.url}
-                  className="bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-white/60 dark:border-slate-700 p-6 rounded-[2.5rem] flex flex-col items-center text-center gap-4 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 group"
+                  className="bg-white dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-700 p-6 rounded-[2.5rem] flex flex-col items-center text-center gap-4 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 group"
                 >
                   <div className="w-16 h-16 rounded-3xl flex items-center justify-center text-white shadow-xl mb-2 group-hover:-translate-y-2 transition-transform" style={{ backgroundColor: settings.theme_color }}>
                     {ICON_OPTIONS[l.icon] || <LinkIcon size={28} />}
                   </div>
-                  <span className="font-bold text-slate-800 dark:text-indigo-50 leading-tight">{l.label}</span>
+                  <span className="font-bold text-slate-900 dark:text-indigo-50 leading-tight tracking-tight">{l.label}</span>
                 </motion.a>
               ))}
             </div>
