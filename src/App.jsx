@@ -6,7 +6,7 @@ import {
   Instagram, Facebook, Youtube, Twitter, Linkedin, Link as LinkIcon,
   Send, Phone, BookOpen, ScrollText, Lightbulb, GraduationCap,
   UserCheck, Camera, FileText, ClipboardList, PlusCircle, AlertCircle,
-  KeyRound, Eye, EyeOff, Sparkles, Instagram as InstagramIcon
+  KeyRound, Eye, EyeOff, Sparkles, Instagram as InstagramIcon, Moon, Sun
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx } from 'clsx';
@@ -27,12 +27,12 @@ const ICON_OPTIONS = {
 // --- COMPONENTS ---
 
 const SkeletonEvent = () => (
-  <div className="min-h-screen p-6 bg-slate-50 flex flex-col items-center animate-pulse">
-    <div className="w-32 h-32 bg-slate-200 rounded-full mt-20 mb-6"></div>
-    <div className="h-8 w-48 bg-slate-200 rounded-xl mb-3"></div>
-    <div className="h-4 w-64 bg-slate-200 rounded-xl mb-12"></div>
+  <div className="min-h-screen p-6 bg-slate-50 dark:bg-slate-950 flex flex-col items-center animate-pulse transition-colors duration-300">
+    <div className="w-32 h-32 bg-slate-200 dark:bg-slate-800 rounded-full mt-20 mb-6"></div>
+    <div className="h-8 w-48 bg-slate-200 dark:bg-slate-800 rounded-xl mb-3"></div>
+    <div className="h-4 w-64 bg-slate-200 dark:bg-slate-800 rounded-xl mb-12"></div>
     <div className="w-full max-w-xl space-y-4">
-      {[1, 2, 3, 4].map(i => <div key={i} className="h-20 bg-slate-200 rounded-[1.5rem] w-full"></div>)}
+      {[1, 2, 3, 4].map(i => <div key={i} className="h-20 bg-slate-200 dark:bg-slate-800 rounded-[1.5rem] w-full"></div>)}
     </div>
   </div>
 );
@@ -53,7 +53,7 @@ const AdminLogin = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-slate-950 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-slate-950 relative overflow-hidden font-sans">
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/40 via-slate-950 to-slate-950" />
       <div className="absolute w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[100px] -bottom-20 -left-20 animate-pulse" />
 
@@ -66,9 +66,9 @@ const AdminLogin = ({ onLogin }) => {
             initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }}
             className="inline-flex items-center justify-center p-4 bg-gradient-to-tr from-blue-500 to-violet-500 rounded-3xl shadow-lg shadow-blue-500/20 mb-6"
           >
-            <Sparkles className="text-white w-8 h-8" />
+            <Sparkles className="text-white w-8 h-8 animate-pulse" />
           </motion.div>
-          <h1 className="text-4xl font-black text-white tracking-tighter mb-2 bg-gradient-to-b from-white to-slate-400 bg-clip-text text-transparent">Masfyvent</h1>
+          <h1 className="text-4xl font-extrabold text-white tracking-tight mb-2 bg-gradient-to-b from-white to-slate-400 bg-clip-text text-transparent">Masfyvent</h1>
           <p className="text-slate-400 font-medium text-sm tracking-wide">Your Gateway to Infinite Possibilities</p>
         </div>
 
@@ -87,9 +87,13 @@ const AdminLogin = ({ onLogin }) => {
 
           {error && <p className="text-rose-500 text-center text-xs font-bold bg-rose-500/10 p-3 rounded-xl border border-rose-500/20">{error}</p>}
 
-          <button disabled={loading} className="w-full bg-white text-slate-950 py-5 rounded-2xl font-black text-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-2xl shadow-white/10">
-            {loading ? <RefreshCcw className="animate-spin" /> : <>Access Dashboard <ChevronRight className="w-5 h-5" /></>}
-          </button>
+          <motion.button
+            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+            disabled={loading}
+            className="w-full bg-white text-slate-950 py-5 rounded-2xl font-black text-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-2xl shadow-white/10 group"
+          >
+            {loading ? <RefreshCcw className="animate-spin" /> : <>Access Dashboard <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></>}
+          </motion.button>
         </form>
 
         <div className="mt-10 text-center">
@@ -106,17 +110,25 @@ const PublicEventView = ({ eventId }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [darkMode, setDarkMode] = useState(false);
   const carouselRef = useRef(null);
+
+  useEffect(() => {
+    // Check system preference or saved preference could go here
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setDarkMode(true);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await fetch(`${API_URL}?action=getData&eventId=${eventId}`);
         const json = await res.json();
-        // Parse "true"/"false" strings to booleans for toggle
+        // Parse boolean
         if (json?.settings?.show_facilitators === 'true') json.settings.show_facilitators = true;
         if (json?.settings?.show_facilitators === 'false') json.settings.show_facilitators = false;
-        if (json?.settings?.show_facilitators === undefined) json.settings.show_facilitators = true; // default true
+        if (json?.settings?.show_facilitators === undefined) json.settings.show_facilitators = true;
         setData(json);
       } catch (e) { console.error(e); } finally { setLoading(false); }
     };
@@ -137,128 +149,160 @@ const PublicEventView = ({ eventId }) => {
     }
   }, [activeIndex]);
 
-  if (loading) return <SkeletonEvent />;
+  if (loading) return <div className={darkMode ? "dark" : ""}><SkeletonEvent /></div>;
   if (!data?.settings) return <div className="min-h-screen flex items-center justify-center text-slate-400 font-bold">Event Not Found</div>;
 
   const { settings, links, facilitators } = data;
   const activeLinks = links.filter(l => l.active);
-  const showFacilitators = settings.show_facilitators !== false; // Default true
+  const showFacilitators = settings.show_facilitators !== false;
 
   return (
-    <div className="min-h-screen pb-24 font-sans transition-colors duration-500" style={{ backgroundColor: settings.background_color }}>
-      <header className="pt-24 pb-12 px-6 flex flex-col items-center text-center">
-        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="relative mb-8 group">
-          <div className="w-36 h-36 rounded-full p-1.5 bg-gradient-to-tr from-orange-400 to-pink-600 shadow-2xl group-hover:scale-105 transition-transform duration-500">
-            <div className="w-full h-full rounded-full border-4 border-white overflow-hidden bg-white">
-              <img src={settings.logo_url} className="w-full h-full object-cover" alt="Logo" />
+    <div className={darkMode ? "dark" : ""}>
+      <div className="min-h-screen pb-24 font-sans transition-colors duration-500 bg-slate-50 dark:bg-slate-950"
+        style={!darkMode ? { backgroundColor: settings.background_color } : {}}>
+
+        {/* Theme Toggle */}
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className="fixed top-6 right-6 z-50 p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-slate-800 dark:text-white shadow-lg hover:scale-110 active:scale-95 transition-all"
+        >
+          {darkMode ? <Sun size={20} className="fill-yellow-400 text-yellow-400 animate-spin-slow" /> : <Moon size={20} className="fill-slate-800" />}
+        </button>
+
+        <header className="pt-24 pb-12 px-6 flex flex-col items-center text-center relative overflow-hidden">
+          {/* Decorative Background Elements */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-b from-blue-500/10 to-transparent rounded-full blur-[80px] -z-10 pointer-events-none" />
+
+          <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 260, damping: 20 }} className="relative mb-8 group">
+            <div className="w-36 h-36 rounded-full p-1 bg-gradient-to-tr from-blue-400 via-purple-500 to-pink-500 shadow-2xl group-hover:scale-105 transition-transform duration-500">
+              <div className="w-full h-full rounded-full border-4 border-white dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-800">
+                <img src={settings.logo_url} className="w-full h-full object-cover" alt="Logo" />
+              </div>
             </div>
-          </div>
-          <div className="absolute bottom-1 right-1 bg-blue-500 p-2 rounded-full border-4 border-white shadow-lg animate-bounce"><BadgeCheck className="w-5 h-5 text-white" /></div>
-        </motion.div>
+            <motion.div
+              initial={{ scale: 0 }} animate={{ scale: 1 }} delay={0.5}
+              className="absolute bottom-1 right-1 bg-blue-500 p-2 rounded-full border-4 border-white dark:border-slate-800 shadow-lg"
+            >
+              <BadgeCheck className="w-5 h-5 text-white" />
+            </motion.div>
+          </motion.div>
 
-        <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
-          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-tight mb-3">{settings.title}</h1>
-          <p className="text-slate-500 font-medium max-w-md mx-auto text-base/relaxed">{settings.description}</p>
-        </motion.div>
-      </header>
+          <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
+            <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight mb-3">{settings.title}</h1>
+            <p className="text-slate-500 dark:text-slate-400 font-medium max-w-md mx-auto text-base/relaxed">{settings.description}</p>
+          </motion.div>
+        </header>
 
-      <main className="max-w-xl mx-auto px-6 space-y-16">
-        {settings.layout_style === 'stack' && (
-          <div className="space-y-4">
-            {activeLinks.map((l, i) => (
-              <motion.a
-                key={l.id} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: i * 0.05 }}
-                href={l.url}
-                className="bg-white/70 backdrop-blur-xl border border-white/60 p-5 rounded-[2rem] flex items-center justify-between group hover:bg-white hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300"
-              >
-                <div className="flex items-center gap-5">
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20" style={{ backgroundColor: settings.theme_color }}>
-                    {ICON_OPTIONS[l.icon] || <LinkIcon size={24} />}
-                  </div>
-                  <span className="font-bold text-slate-800 text-lg">{l.label}</span>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-colors">
-                  <ChevronRight size={20} />
-                </div>
-              </motion.a>
-            ))}
-          </div>
-        )}
-
-        {settings.layout_style === 'grid' && (
-          <div className="grid grid-cols-2 gap-4">
-            {activeLinks.map((l, i) => (
-              <motion.a
-                key={l.id} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: i * 0.05 }}
-                href={l.url}
-                className="bg-white/70 backdrop-blur-xl border border-white/60 p-6 rounded-[2.5rem] flex flex-col items-center text-center gap-4 hover:bg-white hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-300"
-              >
-                <div className="w-16 h-16 rounded-3xl flex items-center justify-center text-white shadow-xl mb-2" style={{ backgroundColor: settings.theme_color }}>
-                  {ICON_OPTIONS[l.icon] || <LinkIcon size={28} />}
-                </div>
-                <span className="font-bold text-slate-800 leading-tight">{l.label}</span>
-              </motion.a>
-            ))}
-          </div>
-        )}
-
-        {settings.layout_style === 'carousel' && (
-          <div className="space-y-6">
-            <div className="flex overflow-x-auto pb-8 snap-x snap-mandatory gap-5 px-2 no-scrollbar" ref={carouselRef} style={{ scrollbarWidth: 'none' }}>
+        <main className="max-w-xl mx-auto px-6 space-y-16">
+          {settings.layout_style === 'stack' && (
+            <div className="space-y-4">
               {activeLinks.map((l, i) => (
                 <motion.a
-                  key={l.id} href={l.url} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                  className={cn("flex-shrink-0 w-[85%] snap-center bg-white p-10 rounded-[3rem] flex flex-col items-center text-center gap-6 shadow-xl transition-all duration-500", activeIndex === i ? "scale-100 opacity-100" : "scale-90 opacity-50 grayscale")}
-                  style={{ backgroundColor: activeIndex === i ? settings.theme_color : '#fff' }}
+                  key={l.id} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: i * 0.05 }}
+                  whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                  href={l.url}
+                  className="relative overflow-hidden bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-white/60 dark:border-slate-700 p-4 rounded-[2rem] flex items-center justify-between group hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300"
                 >
-                  <div className={cn("w-20 h-20 rounded-[2rem] flex items-center justify-center mb-2 shadow-2xl", activeIndex === i ? "bg-white/20 text-white" : "bg-slate-100 text-slate-400")}>
-                    {ICON_OPTIONS[l.icon] || <LinkIcon size={32} />}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:animate-shimmer pointer-events-none" />
+
+                  <div className="flex items-center gap-5 relative z-10">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:rotate-6 transition-transform" style={{ backgroundColor: settings.theme_color }}>
+                      {ICON_OPTIONS[l.icon] || <LinkIcon size={24} />}
+                    </div>
+                    <span className="font-bold text-slate-800 dark:text-indigo-50 text-lg">{l.label}</span>
                   </div>
-                  <span className={cn("text-2xl font-black leading-tight", activeIndex === i ? "text-white" : "text-slate-300")}>{l.label}</span>
+                  <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-slate-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-slate-900 transition-colors z-10">
+                    <ChevronRight size={20} />
+                  </div>
                 </motion.a>
               ))}
             </div>
-          </div>
-        )}
+          )}
 
-        {showFacilitators && facilitators.length > 0 && (
-          <div className="space-y-8">
-            <div className="flex items-center gap-4">
-              <div className="h-px bg-slate-300 flex-grow" />
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Tim Fasilitator</span>
-              <div className="h-px bg-slate-300 flex-grow" />
-            </div>
-            <div className="grid grid-cols-1 gap-4">
-              {facilitators.map((f, i) => (
-                <motion.div key={f.id} initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="bg-white p-5 rounded-[2rem] flex items-center gap-5 shadow-lg shadow-slate-200/50 border border-slate-100 hover:-translate-y-1 transition-transform">
-                  <img src={f.photo || "https://via.placeholder.com/100"} className="w-16 h-16 rounded-2xl object-cover bg-slate-100 shadow-inner" />
-                  <div className="flex-grow min-w-0">
-                    <h4 className="font-bold text-slate-900 truncate">{f.name}</h4>
-                    <p className="text-xs text-slate-500 font-bold uppercase mt-1 flex flex-wrap gap-2">
-                      <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600">{f.unit}</span>
-                      {f.region && <span className="bg-blue-50 px-2 py-0.5 rounded text-blue-600">{f.region}</span>}
-                    </p>
+          {settings.layout_style === 'grid' && (
+            <div className="grid grid-cols-2 gap-4">
+              {activeLinks.map((l, i) => (
+                <motion.a
+                  key={l.id} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: i * 0.05 }}
+                  whileHover={{ scale: 1.05, rotate: 1 }} whileTap={{ scale: 0.95 }}
+                  href={l.url}
+                  className="bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-white/60 dark:border-slate-700 p-6 rounded-[2.5rem] flex flex-col items-center text-center gap-4 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 group"
+                >
+                  <div className="w-16 h-16 rounded-3xl flex items-center justify-center text-white shadow-xl mb-2 group-hover:-translate-y-2 transition-transform" style={{ backgroundColor: settings.theme_color }}>
+                    {ICON_OPTIONS[l.icon] || <LinkIcon size={28} />}
                   </div>
-                  {f.whatsapp && (
-                    <a href={`https://wa.me/${f.whatsapp}`} className="bg-[#25D366] text-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/30 hover:rotate-12 transition-transform shrink-0">
-                      <MessageCircle size={24} />
-                    </a>
-                  )}
-                </motion.div>
+                  <span className="font-bold text-slate-800 dark:text-indigo-50 leading-tight">{l.label}</span>
+                </motion.a>
               ))}
             </div>
-          </div>
-        )}
-      </main>
+          )}
 
-      <footer className="mt-24 text-center">
-        <a href="https://www.instagram.com/masalfy/" target="_blank" className="inline-flex flex-col items-center gap-2 group p-4">
-          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest group-hover:text-pink-500 transition-colors">Powered by</span>
-          <div className="flex items-center gap-2 text-sm font-black text-slate-800 group-hover:text-pink-600 transition-colors">
-            <InstagramIcon size={16} /> Mas Alfy
-          </div>
-        </a>
-      </footer>
+          {settings.layout_style === 'carousel' && (
+            <div className="space-y-6">
+              <div className="flex overflow-x-auto pb-8 snap-x snap-mandatory gap-5 px-2 no-scrollbar" ref={carouselRef} style={{ scrollbarWidth: 'none' }}>
+                {activeLinks.map((l, i) => (
+                  <motion.a
+                    key={l.id} href={l.url} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={cn("flex-shrink-0 w-[85%] snap-center p-10 rounded-[3rem] flex flex-col items-center text-center gap-6 shadow-xl transition-all duration-500 border border-transparent", activeIndex === i ? "scale-100 opacity-100 bg-white dark:bg-slate-800" : "scale-90 opacity-50 grayscale bg-slate-50 dark:bg-slate-900")}
+                    style={activeIndex === i ? { backgroundColor: settings.theme_color } : {}}
+                  >
+                    <div className={cn("w-20 h-20 rounded-[2rem] flex items-center justify-center mb-2 shadow-2xl transition-transform", activeIndex === i ? "bg-white/20 text-white scale-110" : "bg-slate-100 text-slate-400")}>
+                      {ICON_OPTIONS[l.icon] || <LinkIcon size={32} />}
+                    </div>
+                    <span className={cn("text-2xl font-black leading-tight", activeIndex === i ? "text-white" : "text-slate-300")}>{l.label}</span>
+                  </motion.a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {showFacilitators && facilitators.length > 0 && (
+            <div className="space-y-8">
+              <div className="flex items-center gap-4">
+                <div className="h-px bg-slate-300 dark:bg-slate-700 flex-grow" />
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Tim Fasilitator</span>
+                <div className="h-px bg-slate-300 dark:bg-slate-700 flex-grow" />
+              </div>
+              <div className="grid grid-cols-1 gap-4">
+                {facilitators.map((f, i) => (
+                  <motion.div key={f.id} initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                    className="bg-white dark:bg-slate-900/50 p-5 rounded-[2rem] flex items-center gap-5 shadow-lg shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-slate-800 hover:-translate-y-1 transition-transform group"
+                  >
+                    <motion.div whileHover={{ scale: 1.1, rotate: -2 }} className="relative">
+                      <img src={f.photo || "https://via.placeholder.com/100"} className="w-16 h-16 rounded-2xl object-cover bg-slate-100 dark:bg-slate-800 shadow-inner" />
+                    </motion.div>
+                    <div className="flex-grow min-w-0">
+                      <h4 className="font-bold text-slate-900 dark:text-white truncate text-lg">{f.name}</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase mt-1 flex flex-wrap gap-2">
+                        <span className="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-600 dark:text-slate-300">{f.unit}</span>
+                      </p>
+                    </div>
+                    {f.whatsapp && (
+                      <motion.a
+                        whileHover={{ scale: 1.1, rotate: 10 }} whileTap={{ scale: 0.9 }}
+                        href={`https://wa.me/${f.whatsapp}`}
+                        className="bg-[#25D366] text-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/30 shrink-0"
+                      >
+                        <MessageCircle size={24} className="fill-white text-white" />
+                      </motion.a>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
+        </main>
+
+        <footer className="mt-24 text-center">
+          <a href="https://www.instagram.com/masalfy/" target="_blank" className="inline-flex flex-col items-center gap-2 group p-4">
+            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest group-hover:text-pink-500 transition-colors">Powered by</span>
+            <div className="flex items-center gap-2 text-sm font-black text-slate-800 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">
+              <InstagramIcon size={16} /> Mas Alfy
+            </div>
+          </a>
+        </footer>
+      </div>
     </div>
   );
 };
@@ -410,7 +454,7 @@ const AdminDashboard = ({ onLogout }) => {
                   <input className="w-full bg-transparent font-bold text-slate-800 outline-none" value={f.name} onChange={e => setData(p => ({ ...p, facilitators: p.facilitators.map(x => x.id === f.id ? { ...x, name: e.target.value } : x) }))} placeholder="Name" />
                   <div className="flex gap-2">
                     <input className="w-1/2 p-2 bg-white rounded-lg text-xs" value={f.unit} onChange={e => setData(p => ({ ...p, facilitators: p.facilitators.map(x => x.id === f.id ? { ...x, unit: e.target.value } : x) }))} placeholder="Unit" />
-                    <input className="w-1/2 p-2 bg-white rounded-lg text-xs" value={f.region} onChange={e => setData(p => ({ ...p, facilitators: p.facilitators.map(x => x.id === f.id ? { ...x, region: e.target.value } : x) }))} placeholder="Region" />
+                    {/* hidden region input but kept in data structure */}
                   </div>
                   <input className="w-full p-2 bg-white rounded-lg text-xs font-mono text-slate-400" value={f.photo} onChange={e => setData(p => ({ ...p, facilitators: p.facilitators.map(x => x.id === f.id ? { ...x, photo: e.target.value } : x) }))} placeholder="Photo URL" />
                   <input className="w-full p-2 bg-white rounded-lg text-xs font-mono text-slate-400" value={f.whatsapp} onChange={e => setData(p => ({ ...p, facilitators: p.facilitators.map(x => x.id === f.id ? { ...x, whatsapp: e.target.value } : x) }))} placeholder="WA (628...)" type="number" />
