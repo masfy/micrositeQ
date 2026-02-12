@@ -212,17 +212,17 @@ const PublicEventView = ({ eventId }) => {
                   key={l.id} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: i * 0.05 }}
                   whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                   href={l.url}
-                  className="relative overflow-hidden bg-white dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-700 p-4 rounded-[2rem] flex items-center justify-between group shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300"
+                  className="relative overflow-hidden bg-white/30 dark:bg-slate-900/60 backdrop-blur-xl border border-white/50 dark:border-slate-700 p-4 rounded-[2rem] flex items-center justify-between group shadow-lg shadow-slate-200/50 dark:shadow-none hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-100/50 dark:via-white/5 to-transparent translate-x-[-200%] group-hover:animate-shimmer pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/5 to-transparent translate-x-[-200%] group-hover:animate-shimmer pointer-events-none" />
 
                   <div className="flex items-center gap-5 relative z-10">
                     <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:rotate-6 transition-transform" style={{ backgroundColor: settings.theme_color }}>
                       {ICON_OPTIONS[l.icon] || <LinkIcon size={24} />}
                     </div>
-                    <span className="font-bold text-slate-900 dark:text-indigo-50 text-lg tracking-tight">{l.label}</span>
+                    <span className="font-extrabold text-slate-900 dark:text-white text-lg tracking-tight drop-shadow-sm">{l.label}</span>
                   </div>
-                  <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-slate-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-slate-900 transition-colors z-10">
+                  <div className="w-10 h-10 rounded-full bg-white/50 dark:bg-slate-800 flex items-center justify-center group-hover:bg-slate-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-slate-900 transition-colors z-10 shadow-sm">
                     <ChevronRight size={20} />
                   </div>
                 </motion.a>
@@ -237,12 +237,12 @@ const PublicEventView = ({ eventId }) => {
                   key={l.id} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: i * 0.05 }}
                   whileHover={{ scale: 1.05, rotate: 1 }} whileTap={{ scale: 0.95 }}
                   href={l.url}
-                  className="bg-white dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-700 p-6 rounded-[2.5rem] flex flex-col items-center text-center gap-4 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 group"
+                  className="bg-white/30 dark:bg-slate-900/60 backdrop-blur-xl border border-white/50 dark:border-slate-700 p-6 rounded-[2.5rem] flex flex-col items-center text-center gap-4 shadow-lg shadow-slate-200/50 dark:shadow-none hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 group"
                 >
                   <div className="w-16 h-16 rounded-3xl flex items-center justify-center text-white shadow-xl mb-2 group-hover:-translate-y-2 transition-transform" style={{ backgroundColor: settings.theme_color }}>
                     {ICON_OPTIONS[l.icon] || <LinkIcon size={28} />}
                   </div>
-                  <span className="font-bold text-slate-900 dark:text-indigo-50 leading-tight tracking-tight">{l.label}</span>
+                  <span className="font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight drop-shadow-sm">{l.label}</span>
                 </motion.a>
               ))}
             </div>
@@ -278,15 +278,15 @@ const PublicEventView = ({ eventId }) => {
               <div className="grid grid-cols-1 gap-4">
                 {facilitators.map((f, i) => (
                   <motion.div key={f.id} initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                    className="bg-white dark:bg-slate-900/50 p-5 rounded-[2rem] flex items-center gap-5 shadow-lg shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-slate-800 hover:-translate-y-1 transition-transform group"
+                    className="bg-white/40 dark:bg-slate-900/50 backdrop-blur-md p-5 rounded-[2rem] flex items-center gap-5 shadow-lg shadow-slate-200/50 dark:shadow-black/20 border border-white/50 dark:border-slate-800 hover:-translate-y-1 transition-transform group"
                   >
                     <motion.div whileHover={{ scale: 1.1, rotate: -2 }} className="relative">
-                      <img src={f.photo || "https://via.placeholder.com/100"} className="w-16 h-16 rounded-2xl object-cover bg-slate-100 dark:bg-slate-800 shadow-inner" />
+                      <img src={f.photo || "https://via.placeholder.com/100"} className="w-16 h-16 rounded-2xl object-cover bg-white dark:bg-slate-800 shadow-inner" />
                     </motion.div>
                     <div className="flex-grow min-w-0">
-                      <h4 className="font-bold text-slate-900 dark:text-white truncate text-lg">{f.name}</h4>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 font-bold mt-1 flex flex-wrap gap-2">
-                        <span className="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-600 dark:text-slate-300">{f.unit}</span>
+                      <h4 className="font-extrabold text-slate-900 dark:text-white truncate text-lg">{f.name}</h4>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 font-bold mt-1 flex flex-wrap gap-2">
+                        <span className="bg-white/50 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 border border-white/50 dark:border-slate-700">{f.unit}</span>
                       </p>
                     </div>
                     {f.whatsapp && (
@@ -307,8 +307,8 @@ const PublicEventView = ({ eventId }) => {
 
         <footer className="mt-24 text-center">
           <a href="https://www.instagram.com/masalfy/" target="_blank" className="inline-flex flex-col items-center gap-2 group p-4">
-            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest group-hover:text-pink-500 transition-colors">Powered by</span>
-            <div className="flex items-center gap-2 text-sm font-black text-slate-800 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest group-hover:text-pink-500 transition-colors">Powered by</span>
+            <div className="flex items-center gap-2 text-sm font-black text-slate-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">
               <InstagramIcon size={16} /> Mas Alfy
             </div>
           </a>
