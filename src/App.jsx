@@ -274,7 +274,7 @@ const PublicEventView = ({ eventId }) => {
                     </motion.div>
                     <div className="flex-grow min-w-0">
                       <h4 className="font-bold text-slate-900 dark:text-white truncate text-lg">{f.name}</h4>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase mt-1 flex flex-wrap gap-2">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-bold mt-1 flex flex-wrap gap-2">
                         <span className="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-600 dark:text-slate-300">{f.unit}</span>
                       </p>
                     </div>
@@ -442,45 +442,44 @@ const AdminDashboard = ({ onLogout }) => {
             </div>
           </section>
 
-          <section className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="font-bold text-slate-900 flex items-center gap-2"><Users size={18} className="text-orange-500" /> Facilitators</h3>
-              <button onClick={() => setData(p => ({ ...p, facilitators: [...p.facilitators, { id: Date.now(), name: 'Name', unit: 'Unit', photo: '', region: 'Region', whatsapp: '' }] }))} className="bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold">+ Add Person</button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {data.facilitators.map(f => (
-                <div key={f.id} className="p-4 bg-slate-50 rounded-2xl space-y-3 relative">
-                  <button onClick={() => setData(p => ({ ...p, facilitators: p.facilitators.filter(x => x.id !== f.id) }))} className="absolute top-2 right-2 text-slate-300 hover:text-rose-500"><Trash2 size={14} /></button>
-                  <input className="w-full bg-transparent font-bold text-slate-800 outline-none" value={f.name} onChange={e => setData(p => ({ ...p, facilitators: p.facilitators.map(x => x.id === f.id ? { ...x, name: e.target.value } : x) }))} placeholder="Name" />
-                  <div className="flex gap-2">
-                    <input className="w-1/2 p-2 bg-white rounded-lg text-xs" value={f.unit} onChange={e => setData(p => ({ ...p, facilitators: p.facilitators.map(x => x.id === f.id ? { ...x, unit: e.target.value } : x) }))} placeholder="Unit" />
-                    {/* hidden region input but kept in data structure */}
-                  </div>
-                  <input className="w-full p-2 bg-white rounded-lg text-xs font-mono text-slate-400" value={f.photo} onChange={e => setData(p => ({ ...p, facilitators: p.facilitators.map(x => x.id === f.id ? { ...x, photo: e.target.value } : x) }))} placeholder="Photo URL" />
-                  <input className="w-full p-2 bg-white rounded-lg text-xs font-mono text-slate-400" value={f.whatsapp} onChange={e => setData(p => ({ ...p, facilitators: p.facilitators.map(x => x.id === f.id ? { ...x, whatsapp: e.target.value } : x) }))} placeholder="WA (628...)" type="number" />
-                </div>
-              ))}
-            </div>
-          </section>
-        </div>
-      </main>
-
-      {showPassModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-white p-8 rounded-3xl w-full max-w-sm">
-            <h3 className="font-bold text-lg mb-4">Change Password</h3>
-            <form onSubmit={changePass} className="space-y-3">
-              <input className="w-full p-3 bg-slate-50 border rounded-xl" type="password" placeholder="Old Password" value={passData.old} onChange={e => setPassData({ ...passData, old: e.target.value })} />
-              <input className="w-full p-3 bg-slate-50 border rounded-xl" type="password" placeholder="New Password" value={passData.new} onChange={e => setPassData({ ...passData, new: e.target.value })} />
-              <div className="flex gap-2 mt-4">
-                <button type="button" onClick={() => setShowPassModal(false)} className="flex-1 p-3 text-slate-400 font-bold hover:bg-slate-50 rounded-xl">Cancel</button>
-                <button className="flex-1 p-3 bg-blue-600 text-white font-bold rounded-xl">Save</button>
-              </div>
-            </form>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-bold text-slate-900 flex items-center gap-2"><Users size={18} className="text-orange-500" /> Facilitators</h3>
+            <button onClick={() => setData(p => ({ ...p, facilitators: [...p.facilitators, { id: Date.now(), name: '', unit: '', photo: '', region: 'Region', whatsapp: '' }] }))} className="bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold">+ Add Person</button>
           </div>
-        </div>
-      )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {data.facilitators.map(f => (
+              <div key={f.id} className="p-4 bg-slate-50 rounded-2xl space-y-3 relative">
+                <button onClick={() => setData(p => ({ ...p, facilitators: p.facilitators.filter(x => x.id !== f.id) }))} className="absolute top-2 right-2 text-slate-300 hover:text-rose-500"><Trash2 size={14} /></button>
+                <input className="w-full bg-transparent font-bold text-slate-800 outline-none" value={f.name} onChange={e => setData(p => ({ ...p, facilitators: p.facilitators.map(x => x.id === f.id ? { ...x, name: e.target.value } : x) }))} placeholder="Nama Lengkap" />
+                <div className="flex gap-2">
+                  <input className="w-full p-2 bg-white rounded-lg text-xs" value={f.unit} onChange={e => setData(p => ({ ...p, facilitators: p.facilitators.map(x => x.id === f.id ? { ...x, unit: e.target.value } : x) }))} placeholder="Nama Sekolah / Unit" />
+                  {/* hidden region input but kept in data structure */}
+                </div>
+                <input className="w-full p-2 bg-white rounded-lg text-xs font-mono text-slate-400" value={f.photo} onChange={e => setData(p => ({ ...p, facilitators: p.facilitators.map(x => x.id === f.id ? { ...x, photo: e.target.value } : x) }))} placeholder="Photo URL" />
+                <input className="w-full p-2 bg-white rounded-lg text-xs font-mono text-slate-400" value={f.whatsapp} onChange={e => setData(p => ({ ...p, facilitators: p.facilitators.map(x => x.id === f.id ? { ...x, whatsapp: e.target.value } : x) }))} placeholder="WA (628...)" type="number" />
+              </div>
+            ))}
+          </div>
+        </section>
     </div>
+      </main >
+
+  { showPassModal && (
+    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+      <div className="bg-white p-8 rounded-3xl w-full max-w-sm">
+        <h3 className="font-bold text-lg mb-4">Change Password</h3>
+        <form onSubmit={changePass} className="space-y-3">
+          <input className="w-full p-3 bg-slate-50 border rounded-xl" type="password" placeholder="Old Password" value={passData.old} onChange={e => setPassData({ ...passData, old: e.target.value })} />
+          <input className="w-full p-3 bg-slate-50 border rounded-xl" type="password" placeholder="New Password" value={passData.new} onChange={e => setPassData({ ...passData, new: e.target.value })} />
+          <div className="flex gap-2 mt-4">
+            <button type="button" onClick={() => setShowPassModal(false)} className="flex-1 p-3 text-slate-400 font-bold hover:bg-slate-50 rounded-xl">Cancel</button>
+            <button className="flex-1 p-3 bg-blue-600 text-white font-bold rounded-xl">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )}
+    </div >
   );
 };
 
